@@ -602,11 +602,17 @@ setInterval(fetchNowPlaying, 10000);
 
 async function fetchNowPlaying() {
   try {
-    const response = await fetch("https://fpsnew2.listen2myradio.com:2199/currentsong?sid=1");
+    const res = await fetch("https://corsproxy.io/?https://fpsnew2.listen2myradio.com:2199/status-json.xsl");
+    const data = await res.json();
 
-    const text = await response.text();
+    const source = data.icestats.source;
 
-    document.getElementById("nowPlaying").textContent = "🎵 " + text;
+    // parfois source est un tableau
+    const current = Array.isArray(source) ? source[0] : source;
+
+    const title = current.title || "Titre indisponible";
+
+    document.getElementById("nowPlaying").textContent = "🎵 " + title;
 
   } catch (err) {
     console.error(err);
@@ -616,6 +622,7 @@ async function fetchNowPlaying() {
 
 fetchNowPlaying();
 setInterval(fetchNowPlaying, 10000);
+
 	  
   </script>
 
