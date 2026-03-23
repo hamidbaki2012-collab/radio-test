@@ -578,9 +578,6 @@ function loadNowPlaying() {
 }
 
 // Rafraîchir toutes les 10 secondes
-setInterval(loadNowPlaying, 10000);
-loadNowPlaying();
-
 async function fetchNowPlaying() {
   try {
     const res = await fetch("https://gnews-radio-api.vercel.app/api/nowplaying");
