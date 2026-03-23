@@ -599,6 +599,23 @@ fetchNowPlaying();
 
 // mise à jour toutes les 10 secondes
 setInterval(fetchNowPlaying, 10000);
+
+async function fetchNowPlaying() {
+  try {
+    const response = await fetch("https://fpsnew2.listen2myradio.com:2199/currentsong?sid=1");
+
+    const text = await response.text();
+
+    document.getElementById("nowPlaying").textContent = "🎵 " + text;
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById("nowPlaying").textContent = "Titre indisponible";
+  }
+}
+
+fetchNowPlaying();
+setInterval(fetchNowPlaying, 10000);
 	  
   </script>
 
