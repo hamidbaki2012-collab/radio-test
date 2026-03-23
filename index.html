@@ -388,6 +388,9 @@
     <div class="status">
       <span class="live-indicator"></span>En direct
     </div>
+	  <div id="nowPlaying" style="margin:10px 0; font-size:0.9rem;">
+    🎵 <span id="currentSong">Chargement...</span>
+    </div>
 
     <div class="player-wrapper">
       <audio id="radioPlayer" preload="none">
@@ -529,6 +532,32 @@
     document.addEventListener('DOMContentLoaded', () => {
       setVolume(volumeSlider.value);
     });
+	  function loadNowPlaying() {
+  fetch("https://fpsnew2.listen2myradio.com:2199/status-json.xsl")
+    .then(response => response.json())
+    .then(data => {
+      let song = "Aucune info";
+
+      if (data.icestats && data.icestats.source) {
+        if (Array.isArray(data.icestats.source)) {
+          song = data.icestats.source[0].title;
+        } else {
+          song = data.icestats.source.title;
+        }
+      }
+
+      document.getElementById("currentSong").innerText = song;
+    })
+    .catch(error => {
+      console.error("Erreur récupération titre:", error);
+      document.getElementById("currentSong").innerText = "Indisponible";
+    });
+}
+
+// Rafraîchir toutes les 10 secondes
+setInterval(loadNowPlaying, 10000);
+loadNowPlaying();
+
   </script>
 
 </body>
