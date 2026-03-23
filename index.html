@@ -581,6 +581,24 @@ function loadNowPlaying() {
 setInterval(loadNowPlaying, 10000);
 loadNowPlaying();
 
+async function fetchNowPlaying() {
+  try {
+    const res = await fetch("https://gnews-radio-api.vercel.app/api/nowplaying");
+    const data = await res.json();
+
+    const nowPlayingDiv = document.getElementById("nowPlaying");
+    nowPlayingDiv.textContent = "🎵 " + data.song;
+  } catch (err) {
+    console.error("Erreur API:", err);
+    document.getElementById("nowPlaying").textContent = "Titre indisponible";
+  }
+}
+
+// appel initial
+fetchNowPlaying();
+
+// mise à jour toutes les 10 secondes
+setInterval(fetchNowPlaying, 10000);
 	  
   </script>
 
