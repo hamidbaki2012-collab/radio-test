@@ -558,6 +558,30 @@
 setInterval(loadNowPlaying, 10000);
 loadNowPlaying();
 
+// ===== NOW PLAYING =====
+function loadNowPlaying() {
+  fetch("https://api.listen2myradio.com/nowplaying/gnews-radio")
+    .then(response => response.json())
+    .then(data => {
+      let song = "Aucune info";
+
+      if (data && data.nowplaying) {
+        song = data.nowplaying.artist + " - " + data.nowplaying.title;
+      }
+
+      document.getElementById("currentSong").innerText = song;
+    })
+    .catch(error => {
+      console.error("Erreur récupération titre:", error);
+      document.getElementById("currentSong").innerText = "Indisponible";
+    });
+}
+
+// Rafraîchir toutes les 10 secondes
+setInterval(loadNowPlaying, 10000);
+loadNowPlaying();
+
+	  
   </script>
 
 </body>
