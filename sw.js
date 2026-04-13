@@ -1,4 +1,5 @@
-const CACHE_NAME = 'radio-v1';
+const CACHE_NAME = 'radio-v2';
+
 const ASSETS = [
   '/',
   '/index.html',
@@ -15,7 +16,20 @@ self.addEventListener('install', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
+  const url = e.request.url;
+
+  // ❌ Ne pas intercepter certaines requêtes (stream + compteur)
+  if (
+    url.includes('212.84.160.3') ||        // ton serveur radio
+    url.includes('allorigins.win')         // proxy compteur
+  ) {
+    return; // laisse passer sans cache
+  }
+
+  // ✅ cache seulement tes fichiers
   e.respondWith(
-    caches.match(e.request).then((response) => response || fetch(e.request))
+    caches.match(e.request).then((response) => {
+      return response || fetch(e.request);
+    })
   );
 });
