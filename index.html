@@ -1,306 +1,2198 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>📻 Radio Bahá'ie</title>
-  
-  <!-- ===== FAVICONS & ICÔNES ===== -->
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon.ico">
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
-  
-  <!-- ===== PWA MANIFEST ===== -->
-  <link rel="manifest" href="manifest.json">
-  
-  <!-- ===== MÉTADONNÉES POUR MOBILE ===== -->
-  <meta name="theme-color" content="#1a2a6c">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Ma Radio FM">
-  <meta name="mobile-web-app-capable" content="yes">
-  
-  <!-- ===== RESTE DU HEAD ===== -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#09090b">
+    <meta name="format-detection" content="telephone=no">
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <link rel="apple-touch-icon" href="logo.jpg">
+
+    <title>GNews Radio</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,500&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        html, body {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .radio-bg {
+            background: radial-gradient(ellipse at 20% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(ellipse at 50% 80%, rgba(236, 72, 153, 0.08) 0%, transparent 50%),
+                        #09090b;
+            animation: bgShift 12s ease-in-out infinite alternate;
+        }
+        @keyframes bgShift {
+            0% { background-position: 0% 0%, 100% 0%, 50% 100%; }
+            100% { background-position: 20% 20%, 80% 30%, 40% 80%; }
+        }
+
+        .logo-glow {
+            filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.4)) drop-shadow(0 0 60px rgba(139, 92, 246, 0.15));
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+        .logo-glow.playing {
+            filter: drop-shadow(0 0 30px rgba(139, 92, 246, 0.6)) drop-shadow(0 0 80px rgba(139, 92, 246, 0.25));
+            animation: logoPulseActive 1.5s ease-in-out infinite;
+        }
+        @keyframes logoPulse {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.4)) drop-shadow(0 0 60px rgba(139, 92, 246, 0.15)); }
+            50% { filter: drop-shadow(0 0 25px rgba(139, 92, 246, 0.5)) drop-shadow(0 0 70px rgba(139, 92, 246, 0.2)); }
+        }
+        @keyframes logoPulseActive {
+            0%, 100% { filter: drop-shadow(0 0 30px rgba(139, 92, 246, 0.6)) drop-shadow(0 0 80px rgba(139, 92, 246, 0.25)); }
+            50% { filter: drop-shadow(0 0 45px rgba(139, 92, 246, 0.8)) drop-shadow(0 0 100px rgba(139, 92, 246, 0.35)); }
+        }
+
+        .logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 1.5rem;
+        }
+
+        .logo-border-ring {
+            position: absolute;
+            inset: -3px;
+            border-radius: 1.75rem;
+            background: conic-gradient(from 0deg, rgba(139,92,246,0.5), rgba(59,130,246,0.3), rgba(236,72,153,0.3), rgba(139,92,246,0.5));
+            animation: borderRotate 8s linear infinite;
+            opacity: 0.6;
+            z-index: -1;
+        }
+        .logo-border-ring.active {
+            opacity: 1;
+            animation-duration: 3s;
+        }
+        @keyframes borderRotate { to { transform: rotate(360deg); } }
+
+        .eq-bar {
+            transform-origin: bottom;
+            animation: eqBounce var(--duration) ease-in-out infinite alternate;
+            animation-play-state: paused;
+        }
+        .eq-bar.active { animation-play-state: running; }
+        @keyframes eqBounce {
+            0% { transform: scaleY(0.15); }
+            100% { transform: scaleY(var(--max-h, 1)); }
+        }
+
+        .play-ring {
+            background: conic-gradient(from 0deg, #8b5cf6, #3b82f6, #ec4899, #8b5cf6);
+            animation: ringRotate 4s linear infinite;
+            animation-play-state: paused;
+        }
+        .play-ring.active { animation-play-state: running; }
+        @keyframes ringRotate { to { transform: rotate(360deg); } }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(139, 92, 246, 0.5);
+            animation: rippleOut 1.5s ease-out forwards;
+            pointer-events: none;
+        }
+        @keyframes rippleOut {
+            0% { width: 80px; height: 80px; opacity: 1; }
+            100% { width: 200px; height: 200px; opacity: 0; }
+        }
+
+        input[type="range"].vol-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            border-radius: 9999px;
+            background: rgba(255,255,255,0.1);
+            outline: none;
+        }
+        input[type="range"].vol-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.5), 0 2px 8px rgba(0,0,0,0.4);
+            cursor: pointer;
+        }
+        input[type="range"].vol-slider::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.5), 0 2px 8px rgba(0,0,0,0.4);
+            cursor: pointer;
+            border: none;
+        }
+
+        .page-panel {
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .page-panel.open { transform: translateY(0); }
+
+        .page-overlay {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .page-overlay.open { opacity: 1; pointer-events: auto; }
+
+        .toast {
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+
+        .safe-top { padding-top: max(12px, env(safe-area-inset-top)); }
+        .safe-bottom { padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+
+        .status-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #ef4444;
+            animation: statusBlink 1.5s ease-in-out infinite;
+        }
+        .status-dot.live { background: #22c55e; }
+        @keyframes statusBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(139, 92, 246, 0.3);
+            pointer-events: none;
+            animation: floatParticle var(--float-duration) ease-in-out infinite;
+        }
+        @keyframes floatParticle {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            25% { transform: translate(var(--tx), var(--ty)) scale(1.2); opacity: 0.5; }
+            50% { transform: translate(calc(var(--tx) * -0.5), calc(var(--ty) * 1.5)) scale(0.8); opacity: 0.2; }
+            75% { transform: translate(calc(var(--tx) * 0.7), calc(var(--ty) * -0.8)) scale(1.1); opacity: 0.4; }
+        }
+
+        input, textarea, select {
+            font-size: 16px !important;
+        }
+
+        .loading-spinner {
+            border: 2px solid rgba(255,255,255,0.1);
+            border-top-color: #8b5cf6;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ===== Ligne titre de la chanson ===== */
+        .song-title-container {
+            width: 100%;
+            max-width: 300px;
+            overflow: hidden;
+            position: relative;
+            min-height: 22px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .song-title-text {
+            white-space: nowrap;
+            font-size: 13px;
+            font-weight: 500;
+            color: #c4b5fd;
+            will-change: transform;
+            text-align: left;
+            padding-left: 0;
+        }
+        .song-title-text.scrolling {
+            animation: marqueeScroll var(--scroll-duration, 8s) linear infinite alternate;
+        }
+        @keyframes marqueeScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(var(--scroll-distance, -100px)); }
+        }
+        .song-title-container .fade-left,
+        .song-title-container .fade-right {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 30px;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .song-title-container.has-overflow .fade-left,
+        .song-title-container.has-overflow .fade-right {
+            opacity: 1;
+        }
+        .song-title-container .fade-left {
+            left: 0;
+            background: linear-gradient(to right, #09090b, transparent);
+        }
+        .song-title-container .fade-right {
+            right: 0;
+            background: linear-gradient(to left, #09090b, transparent);
+        }
+        .song-title-status {
+            font-size: 10px;
+            color: #555;
+            text-align: center;
+            min-height: 14px;
+            margin-top: 2px;
+        }
+
+        /* ===== Badge de categorie de contenu ===== */
+        .cat-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        .cat-badge.cat-music {
+            background: rgba(139, 92, 246, 0.15);
+            color: #c4b5fd;
+            border: 1px solid rgba(139, 92, 246, 0.25);
+        }
+        .cat-badge.cat-jingle {
+            background: rgba(234, 179, 8, 0.12);
+            color: #fbbf24;
+            border: 1px solid rgba(234, 179, 8, 0.25);
+        }
+        .cat-badge.cat-pub {
+            background: rgba(249, 115, 22, 0.12);
+            color: #fb923c;
+            border: 1px solid rgba(249, 115, 22, 0.25);
+        }
+        .cat-badge.cat-news {
+            background: rgba(59, 130, 246, 0.12);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.25);
+        }
+        .cat-badge.cat-citation {
+            background: rgba(168, 85, 247, 0.12);
+            color: #c084fc;
+            border: 1px solid rgba(168, 85, 247, 0.25);
+        }
+        .cat-badge.cat-podcast {
+            background: rgba(16, 185, 129, 0.12);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        /* Ligne titre avec badge */
+        .song-title-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        /* ===== Sous-rubriques expansibles ===== */
+        .expandable-card {
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .expandable-card:hover {
+            background: rgba(255,255,255,0.04);
+        }
+        .expandable-card .expand-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, margin-top 0.3s ease;
+            opacity: 0;
+            margin-top: 0;
+        }
+        .expandable-card.expanded .expand-content {
+            max-height: 500px;
+            opacity: 1;
+            margin-top: 12px;
+        }
+        .expandable-card .expand-chevron {
+            transition: transform 0.3s ease;
+        }
+        .expandable-card.expanded .expand-chevron {
+            transform: rotate(180deg);
+        }
+        .expandable-card .card-preview {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .expandable-card.expanded .card-preview {
+            -webkit-line-clamp: unset;
+            overflow: visible;
+        }
+
+        /* ===== Bouton A propos ===== */
+        .about-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: 9999px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            color: #c4b5fd;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            user-select: none;
+        }
+        .about-btn:hover {
+            background: rgba(139, 92, 246, 0.18);
+            border-color: rgba(139, 92, 246, 0.35);
+            color: #ddd6fe;
+        }
+        .about-btn:active {
+            transform: scale(0.95);
+        }
+        .about-btn .about-btn-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(139, 92, 246, 0.2);
+        }
+
+        /* ===== Valeurs / Piliers dans le panneau A propos ===== */
+        .pillar-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 1rem;
+            padding: 16px;
+            transition: background 0.2s ease;
+        }
+        .pillar-card:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* ===== Citation style ===== */
+        .quote-block {
+            position: relative;
+            padding: 16px 20px 16px 24px;
+            background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(59,130,246,0.06));
+            border-left: 3px solid rgba(139,92,246,0.5);
+            border-radius: 0 1rem 1rem 0;
+        }
+        .quote-block::before {
+            content: '\201C';
+            position: absolute;
+            top: 4px;
+            left: 6px;
+            font-size: 32px;
+            font-family: 'Playfair Display', serif;
+            color: rgba(139,92,246,0.3);
+            line-height: 1;
+        }
+        /* ===== Debug panel ===== */
+        .debug-panel {
+            position: fixed;
+            bottom: 70px;
+            left: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.9);
+            border: 1px solid rgba(139,92,246,0.3);
+            border-radius: 12px;
+            padding: 10px 14px;
+            z-index: 200;
+            font-size: 10px;
+            color: #aaa;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            font-family: monospace;
+        }
+        .debug-panel.visible { display: block; }
+        .debug-panel .debug-line { margin-bottom: 3px; word-break: break-all; }
+        .debug-panel .debug-line.ok { color: #34d399; }
+        .debug-panel .debug-line.warn { color: #fbbf24; }
+        .debug-panel .debug-line.err { color: #ef4444; }
+        .debug-panel .debug-line.info { color: #60a5fa; }
+        .debug-toggle {
+            position: fixed;
+            bottom: 64px;
+            right: 8px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(139,92,246,0.2);
+            border: 1px solid rgba(139,92,246,0.4);
+            color: #c4b5fd;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 201;
+            cursor: pointer;
+        }
+        .debug-test-btn {
+            position: fixed;
+            bottom: 96px;
+            right: 8px;
+            padding: 3px 10px;
+            border-radius: 8px;
+            background: rgba(16,185,129,0.2);
+            border: 1px solid rgba(16,185,129,0.4);
+            color: #34d399;
+            font-size: 9px;
+            font-weight: 600;
+            z-index: 201;
+            cursor: pointer;
+            display: none;
+        }
+        .debug-test-btn.visible { display: block; }
+    </style>
 </head>
+<body class="bg-[#09090b] text-white min-h-screen radio-bg overflow-hidden select-none">
 
-<style>
-body {
-  font-family: Arial;
-  background-color: #1a2a6c;
-  background-image:
-    linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.5)),
-    url('background.jpg');
+    <div id="particles" class="fixed inset-0 pointer-events-none z-0"></div>
 
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-
-  color: white;
-  margin: 0;
-  height: 100vh;
-
-  display: flex;
-  justify-content: center;
-  align-items: center; /* ✅ CENTRAGE */
-}
-
-
-  margin: 0;
-  height: 100vh;
-
-  display: flex;
-  align-items: center;   /* ⬇️ pousse en bas */
-  justify-content: center;
-}
-
-}
-
-.container {
-  max-width: 480px;
-  margin: auto;
-}
-/* LOGO */
-    
-    .logo-container {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: white;
-  margin: 30px auto;
-  display: flex;
-  align-items: left;
-  justify-content: left;
-  overflow: hidden;
-  border: 3px solid rgba(255,255,255,0.3);
-      }
-
-   .logo-container img {
-   width: 100%;
-   height: 100%;
-   object-fit: cover;
-    }
-   
-    h1 {
-      text-align: center;
-      margin: 10px 0 20px;
-    }
-.status {
-  margin: 15px 0;
-  text-align: center; /* ✅ centrage horizontal */
-}
-
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  display: inline-block;
-  margin-right: 5px;
-  background: red;
-}
-
-.player-wrapper {
-      width: 100%;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 50px;
-      padding: 20px;
-      margin: 10px 0;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* BOUTON */
-#playBtn {
-  display: block;
-  margin: 20px auto;
-  font-size: 22px;
-  padding: 15px 40px;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  color: white;
-  background: #4fc3f7; /* BLEU CLAIR (PLAY par défaut) */
-  transition: 0.3s;
-}
-
-/* état PLAY (bleu clair) */
-#playBtn {
-  background: #4fc3f7;
-}
-
-/* état PAUSE (rouge) */
-#playBtn.active {
-  background: #ff4b4b;
-
-}
-
-#playBtn.active {
-  background: #ff4b4b;
-}
-
-/* VOLUME */
-.volume-container {
-  margin-top: 15px;
-}
-
-input[type=range] {
-  width: 100%;
-}
-
-/* ONDE */
-.radio-wave {
-  display: none;
-  justify-content: center;
-  gap: 5px;
-  margin-top: 15px;
-}
-
-.radio-wave.active {
-  display: flex;
-}
-
-.wave {
-  width: 6px;
-  height: 25px;
-  background: white;
-  border-radius: 10px;
-  animation: waveAnim 1s infinite ease-in-out;
-}
-
-.wave:nth-child(2) { animation-delay: 0.2s; }
-.wave:nth-child(3) { animation-delay: 0.4s; }
-
-@keyframes waveAnim {
-  0%,100% { transform: scaleY(0.4); }
-  50% { transform: scaleY(1.2); }
-}
-
-</style>
-</head>
-
-<body>
-
-<div class="container">
-
-<!-- Défilement standard (gauche à droite) -->
-  <marquee loop="100"> Bienvenue sur notre chaine radio privée expérimentale. Heureux de vous avoir parmi nos auditeurs fidèles. Soyez à l'écoute de 19h à 22h.! </marquee>
-  
-   <!-- Logo -->
-    <div class="logo-container">
-      <img src="logo.png" alt="Logo Radio" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-      <div class="logo-placeholder" style="display: none;">📻<br>Votre Logo<br>180×180px</div>
-    </div>
-	
-  <h1>🎧 Radio Live</h1>
-	<h1> thème principal : " les joyaux des mystères  divins"</h1>
-
-  <div class="status">
-    <span id="statusDot" class="dot"></span>
-    <span id="radioStatus">Hors ligne</span>
-  </div>
-
-  <div class="player-box">
-
-    <audio id="player">
-      <source src="https://fpsnew2.listen2myradio.com:2199/listen.php?ip=212.84.160.3&port=5360&type=s1">
-    </audio>
-
-    <br><br>
-
-    <button id="playBtn">▶ Play</button>
-
-    <div class="volume-container">
-      🔊 Volume
-      <input type="range" min="0" max="100" value="70" id="volume">
+    <div id="toast" class="toast fixed top-20 left-1/2 -translate-x-1/2 z-[100] bg-zinc-800/90 backdrop-blur-xl border border-white/10 rounded-2xl px-5 py-3 flex items-center gap-3 shadow-2xl">
+        <i data-lucide="info" class="w-4 h-4 text-violet-400 shrink-0"></i>
+        <span id="toastMsg" class="text-sm text-zinc-200"></span>
     </div>
 
-    <!-- ONDE -->
-    <div id="radioWave" class="radio-wave">
-      <div class="wave"></div>
-      <div class="wave"></div>
-      <div class="wave"></div>
+    <div class="relative z-10 flex flex-col h-screen max-h-[100dvh]">
+
+        <header class="safe-top flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-2">
+                <div class="status-dot" id="statusDot"></div>
+                <span class="text-[11px] font-semibold uppercase tracking-widest text-zinc-500" id="statusText">Hors ligne</span>
+            </div>
+            <button onclick="shareRadio()" class="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all">
+                <i data-lucide="share-2" class="w-4 h-4 text-zinc-400"></i>
+            </button>
+        </header>
+
+        <main class="flex-1 flex flex-col items-center justify-between px-6 py-2 overflow-hidden">
+
+            <div class="flex flex-col items-center">
+                <div class="logo-glow mt-2 mb-4" id="logoContainer">
+                    <div class="relative">
+                        <div class="logo-border-ring" id="logoBorderRing"></div>
+                        <div class="w-32 h-32 md:w-40 md:h-40 rounded-3xl overflow-hidden shadow-2xl shadow-violet-500/20 relative z-10">
+                            <img src="logo.jpg" alt="GNews Radio" class="logo-img" draggable="false">
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-zinc-400 text-xs font-light tracking-wide mb-3 text-center">
+                    Votre radio de 19h - 22h (GMT+2)
+                </p>
+
+                <!-- ===== BOUTON A PROPOS ===== -->
+                <button class="about-btn mb-5" onclick="openPage('apropos')">
+                    <span class="about-btn-icon">
+                        <i data-lucide="info" class="w-3 h-3"></i>
+                    </span>
+                    <span>A propos de la radio</span>
+                </button>
+
+                <div class="flex items-end gap-[3px] h-10 mb-5" id="equalizer">
+				    <div class="eq-bar w-[4px] rounded-full bg-gradient-to-t from-violet-600 to-violet-400" style="--duration: 0.4s; --max-h: 0.9; height: 100%"></div>
+                    <div class="eq-bar w-[4px] rounded-full bg-gradient-to-t from-violet-600 to-blue-400" style="--duration: 0.55s; --max-h: 0.6; height: 100%"></div>
+                    <div class="eq-bar w-[4px] rounded-full bg-gradient-to-t from-blue-600 to-blue-400" style="--duration: 0.35s; --max-h: 1; height: 100%"></div>
+                    <div class="eq-bar w-[4px] rounded-full bg-gradient-to-t from-blue-600 to-cyan-400" style="--duration: 0.65s; --max-h: 0.75; height: 100%"></div>   
+                    <div class="eq-bar w-[4px] rounded-full bg-gradient-to-t from-violet-600 to-blue-400" style="--duration: 0.55s; --max-h: 0.6; height: 100%"></div>
+                    <div class="eq-bar w-[4px] rounded-full bg-gradient-to-t from-blue-600 to-blue-400" style="--duration: 0.35s; --max-h: 1; height: 100%"></div>
+                    <div class="eq-bar w-[4px] rounded-full bg-gradient-to-t from-blue-600 to-cyan-400" style="--duration: 0.65s; --max-h: 0.75; height: 100%"></div>
+                    <div class="eq-bar w-[4px] rounded-full bg-gradient-to-t from-pink-600 to-pink-400" style="--duration: 0.45s; --max-h: 0.85; height: 100%"></div>
+                    <div class="eq-bar w-[4px] rounded-full bg-gradient-to-t from-violet-600 to-pink-400" style="--duration: 0.5s; --max-h: 0.5; height: 100%"></div>
+                    <div class="eq-bar w-[4px] rounded-full bg-gradient-to-t from-blue-600 to-violet-400" style="--duration: 0.6s; --max-h: 0.95; height: 100%"></div>
+                    <div class="eq-bar w-[4px] rounded-full bg-gradient-to-t from-pink-600 to-violet-400" style="--duration: 0.38s; --max-h: 0.7; height: 100%"></div>
+                    <div class="eq-bar w-[4px] rounded-full bg-gradient-to-t from-violet-600 to-blue-400" style="--duration: 0.52s; --max-h: 0.55; height: 100%"></div>
+                    <div class="eq-bar w-[4px] rounded-full bg-gradient-to-t from-blue-600 to-cyan-400" style="--duration: 0.65s; --max-h: 0.75; height: 100%"></div>
+                    <div class="eq-bar w-[4px] rounded-full bg-gradient-to-t from-pink-600 to-pink-400" style="--duration: 0.45s; --max-h: 0.85; height: 100%"></div>
+					<div class="eq-bar w-[4px] rounded-full bg-gradient-to-t from-blue-600 to-pink-400" style="--duration: 0.42s; --max-h: 0.8; height: 100%"></div>
+					<div class="eq-bar w-[4px] rounded-full bg-gradient-to-t from-pink-600 to-pink-400" style="--duration: 0.45s; --max-h: 0.85; height: 100%"></div>
+                    <div class="eq-bar w-[4px] rounded-full bg-gradient-to-t from-violet-600 to-violet-400" style="--duration: 0.4s; --max-h: 0.9; height: 100%"></div>					
+                    <div class="eq-bar w-[4px] rounded-full bg-gradient-to-t from-violet-600 to-cyan-400" style="--duration: 0.58s; --max-h: 0.65; height: 100%"></div>
+                    <div class="eq-bar w-[4px] rounded-full bg-gradient-to-t from-pink-600 to-blue-400" style="--duration: 0.48s; --max-h: 0.9; height: 100%"></div>					
+                </div>
+            </div>
+
+            <div class="flex flex-col items-center">
+                <div class="relative mb-4" id="playBtnContainer">
+                    <div class="play-ring absolute -inset-[3px] rounded-full opacity-60" id="playRing"></div>
+                    <button onclick="togglePlay()" id="playBtn" class="relative w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-xl shadow-white/10 active:scale-95 transition-transform duration-150 z-10">
+                        <i data-lucide="play" class="w-8 h-8 text-zinc-900 ml-1" id="playIcon"></i>
+                    </button>
+                </div>
+                <div class="text-center min-h-[36px] mb-2">
+                    <p class="text-white font-medium text-sm" id="nowPlaying">Prêt à écouter</p>
+                    <p class="text-zinc-500 text-xs mt-0.5" id="nowPlayingSub">Appuyez sur play pour demarrer</p>
+                </div>
+
+                <!-- Ligne titre avec categorie -->
+                <div class="song-title-row mb-1" id="songTitleRow">
+                    <span class="cat-badge cat-music" id="catBadge"><i data-lucide="music" style="width:10px;height:10px;"></i> Musique</span>
+                    <div class="song-title-container" id="songTitleContainer">
+                        <div class="fade-left"></div>
+                        <div class="fade-right"></div>
+                        <span class="song-title-text" id="songTitle">--</span>
+                    </div>
+                </div>
+                <div class="song-title-status mb-2" id="titleStatus"></div>
+            </div>
+
+            <div class="w-full max-w-[280px] mb-2">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMute()" class="shrink-0 w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/5 active:scale-90 transition-all" id="muteBtn">
+                        <i data-lucide="volume-2" class="w-4 h-4 text-zinc-400" id="volIcon"></i>
+                    </button>
+                    <input type="range" min="0" max="100" value="80" class="vol-slider flex-1" id="volumeSlider" oninput="changeVolume(this.value)">
+                    <span class="text-[11px] text-zinc-500 font-medium w-8 text-right tabular-nums" id="volValue">80%</span>
+                </div>
+            </div>
+
+        </main>
+
+        <nav class="safe-bottom shrink-0 border-t border-white/5 bg-black/40 backdrop-blur-2xl">
+            <div class="flex items-center justify-around px-2 py-2">
+                <button onclick="openPage('news')" class="nav-btn flex flex-col items-center gap-1 py-2 px-5 rounded-2xl transition-all duration-200 active:scale-95" data-page="news">
+                    <div class="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
+                        <i data-lucide="newspaper" class="w-5 h-5 text-violet-400"></i>
+                    </div>
+                    <span class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">News</span>
+                </button>
+                <button onclick="openPage('annonces')" class="nav-btn flex flex-col items-center gap-1 py-2 px-5 rounded-2xl transition-all duration-200 active:scale-95" data-page="annonces">
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                        <i data-lucide="megaphone" class="w-5 h-5 text-blue-400"></i>
+                    </div>
+                    <span class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Annonces</span>
+                </button>
+                <button onclick="openPage('contacts')" class="nav-btn flex flex-col items-center gap-1 py-2 px-5 rounded-2xl transition-all duration-200 active:scale-95" data-page="contacts">
+                    <div class="w-10 h-10 rounded-xl bg-pink-500/10 flex items-center justify-center">
+                        <i data-lucide="mail" class="w-5 h-5 text-pink-400"></i>
+                    </div>
+                    <span class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Contacts</span>
+                </button>
+            </div>
+            <p class="text-center text-[9px] text-zinc-600 pb-1 pt-1">Hamid b. copyright 2026 - version V2</p>
+        </nav>
     </div>
 
-  </div>
+    <div class="page-overlay fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" id="pageOverlay" onclick="closePage()"></div>
 
-</div>
+    <!-- ===== PAGE A PROPOS ===== -->
+    <div class="page-panel fixed inset-x-0 bottom-0 z-50 bg-[#0f0f12] rounded-t-3xl max-h-[85dvh] flex flex-col" id="page-apropos">
+        <div class="shrink-0 flex items-center justify-between px-6 pt-5 pb-3 border-b border-white/5">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-violet-500/15 flex items-center justify-center">
+                    <i data-lucide="radio" class="w-4 h-4 text-violet-400"></i>
+                </div>
+                <h2 class="text-lg font-bold">A propos de GNews Radio</h2>
+            </div>
+            <button onclick="closePage()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center active:scale-90 transition-transform">
+                <i data-lucide="x" class="w-4 h-4 text-zinc-400"></i>
+            </button>
+        </div>
+        <div class="flex-1 overflow-y-auto no-scrollbar p-6 space-y-5">
 
-<script>
-const player = document.getElementById("player");
-const btn = document.getElementById("playBtn");
-const dot = document.getElementById("statusDot");
-const status = document.getElementById("radioStatus");
-const wave = document.getElementById("radioWave");
+            <!-- Logo et nom -->
+            <div class="flex flex-col items-center text-center mb-2">
+                <div class="w-20 h-20 rounded-2xl overflow-hidden shadow-lg shadow-violet-500/20 mb-4">
+                    <img src="logo.jpg" alt="GNews Radio" class="w-full h-full object-cover">
+                </div>
+                <h3 class="font-display text-2xl font-bold bg-gradient-to-r from-violet-400 via-blue-400 to-pink-400 bg-clip-text text-transparent">GNews Radio</h3>
+                <p class="text-zinc-500 text-xs font-medium uppercase tracking-widest mt-1">Unité dans la Diversité</p>
+            </div>
 
-// volume
-document.getElementById("volume").addEventListener("input", e => {
-  player.volume = e.target.value / 100;
-});
+            <!-- Description principale -->
+            <div class="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5">
+                <h4 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                    <i data-lucide="align-left" class="w-4 h-4 text-violet-400"></i>
+                    Qui sommes-nous ?
+                </h4>
+                <p class="text-sm text-zinc-300 font-light leading-relaxed">
+                    GNews Radio est une webradio, née d'une initiative privée et dediée à l'information, la culture et la spiritualité. Née de la volonté de créer un pont entre les peuples, elle diffuse chaque soir de 19h a 22h (GMT+2) des programmes variés allant de l'actualité locale, nationale et internationale aux débats de société, en passant par la musique libre de droit, des podcasts, des moments de dévotions, des informations sur les activiés de la communauté bahá'ie et des annonces d'évènements futurs.
+                </p>
+                <p class="text-sm text-zinc-300 font-light leading-relaxed mt-3">
+                    Basée au Luxembourg, GNews Radio s'adresse à un public diversifié, francophone en premier lieu, arabophone, mais aussi ispanique portugais et soucieux de rester connecté aux enjeux du monde tout en cultivant des valeurs de tolérance, de respect mutuel et d'unité dans la diversité.
+                </p>
+            </div>
 
-// play / pause
-btn.addEventListener("click", () => {
+            <!-- Notre mission -->
+            <div class="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5">
+                <h4 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                    <i data-lucide="target" class="w-4 h-4 text-blue-400"></i>
+                    Notre mission
+                </h4>
+                <p class="text-sm text-zinc-300 font-light leading-relaxed">
+                    GNews Radio a pour mission d'informer, de partager des expériences sur l'éducation spirituelle et morale, mais aussi sur des thèmes touchant à la transformation sociale, à l'environnement, à l'économie, à la paix et de rassembler autour de ces valeurs. A travers ses émissions, elle vise à aussi donner une voix aux sans-voix, à faire rayonner les initiatives positives et constructives. et à favoriser le dialogue interculturel et interreligieux. La radio s'engage a offrir un espace d'expression libre et responsable, ou chaque voix compte et chaque perspective enrichit le débat.
+                </p>
+            </div>
 
-  if (player.paused) {
+            <!-- Citation -->
+            <div class="quote-block">
+                <p class="text-sm text-zinc-200 font-light leading-relaxed italic pl-3">
+                    La terre n'est qu'un seul pays, et tous les hommes en sont les citoyens.
+                </p>
+                <p class="text-xs text-violet-400 font-medium mt-2 pl-3">-- Bahá'u'lláh</p>
+            </div>
 
-    player.play();
+            <!-- Nos valeurs / Piliers -->
+            <div>
+                <h4 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                    <i data-lucide="heart" class="w-4 h-4 text-pink-400"></i>
+                    Nos valeurs
+                </h4>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="pillar-card">
+                        <div class="w-9 h-9 rounded-xl bg-violet-500/15 flex items-center justify-center mb-2.5">
+                            <i data-lucide="users" class="w-4 h-4 text-violet-400"></i>
+                        </div>
+                        <h5 class="text-xs font-bold text-white mb-1">Unité</h5>
+                        <p class="text-[11px] text-zinc-400 font-light leading-relaxed">Promouvoir la cohésion et la fraternité entre les peuples et les cultures.</p>
+                    </div>
+                    <div class="pillar-card">
+                        <div class="w-9 h-9 rounded-xl bg-blue-500/15 flex items-center justify-center mb-2.5">
+                            <i data-lucide="scale" class="w-4 h-4 text-blue-400"></i>
+                        </div>
+                        <h5 class="text-xs font-bold text-white mb-1">Justice</h5>
+                        <p class="text-[11px] text-zinc-400 font-light leading-relaxed">Défendre les droits humains et alerter sur les injustices dans le monde.</p>
+                    </div>
+                    <div class="pillar-card">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-500/15 flex items-center justify-center mb-2.5">
+                            <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i>
+                        </div>
+                        <h5 class="text-xs font-bold text-white mb-1">Education</h5>
+                        <p class="text-[11px] text-zinc-400 font-light leading-relaxed">Contribuer à l'éveil des consciences et au développement des capacités.</p>
+                    </div>
+                    <div class="pillar-card">
+                        <div class="w-9 h-9 rounded-xl bg-pink-500/15 flex items-center justify-center mb-2.5">
+                            <i data-lucide="handshake" class="w-4 h-4 text-pink-400"></i>
+                        </div>
+                        <h5 class="text-xs font-bold text-white mb-1">Dialogue</h5>
+                        <p class="text-[11px] text-zinc-400 font-light leading-relaxed">Favoriser les échanges constructifs entre les traditions et les cultures.</p>
+                    </div>
+                </div>
+            </div>
 
-    // ✅ FORCER L’AFFICHAGE
-    btn.classList.add("active");
-    btn.textContent = "⏸ Pause";
-    status.textContent = "En direct";
-    dot.style.background = "#00ff88";
-    wave.classList.add("active");
+            <!-- Ce que nous diffusons -->
+            <div class="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5">
+                <h4 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                    <i data-lucide="radio" class="w-4 h-4 text-emerald-400"></i>
+                    Ce que nous diffusons
+                </h4>
+                <ul class="space-y-2.5">
+                    <li class="flex items-start gap-2.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-violet-400 mt-1.5 shrink-0"></span>
+                        <span class="text-sm text-zinc-300 font-light leading-relaxed"><strong class="text-white font-medium">Flash infos</strong> -- L'actualité internationale et nationale analysée avec rigueur et impartialité.</span>
+                    </li>
+                    <li class="flex items-start gap-2.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 shrink-0"></span>
+                        <span class="text-sm text-zinc-300 font-light leading-relaxed"><strong class="text-white font-medium">Débats et reflexions</strong> -- Des discussions approfondies sur les enjeux de société, la spiritualité et le vivre-ensemble.</span>
+                    </li>
+                    <li class="flex items-start gap-2.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-pink-400 mt-1.5 shrink-0"></span>
+                        <span class="text-sm text-zinc-300 font-light leading-relaxed"><strong class="text-white font-medium">Musique et culture</strong> -- Une sélection musicale variée libre de droit et des découvertes culturelles du monde entier.</span>
+                    </li>
+                    <li class="flex items-start gap-2.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0"></span>
+                        <span class="text-sm text-zinc-300 font-light leading-relaxed"><strong class="text-white font-medium">Temoignages</strong> -- Des voix du monde entier partagent leurs experiences et leurs espoirs.</span>
+                    </li>
+                    <li class="flex items-start gap-2.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-orange-400 mt-1.5 shrink-0"></span>
+                        <span class="text-sm text-zinc-300 font-light leading-relaxed"><strong class="text-white font-medium">Annonces communautaires</strong> -- Informations sur les évènements locaux, nationaux et internationaux.</span>
+                    </li>
+                </ul>
+            </div>
 
-  } else {
+            <!-- Infos pratiques -->
+            <div class="bg-gradient-to-br from-violet-500/8 to-blue-500/8 border border-violet-500/15 rounded-2xl p-5">
+                <h4 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                    <i data-lucide="clock" class="w-4 h-4 text-violet-400"></i>
+                    Infos pratiques
+                </h4>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="clock" class="w-4 h-4 text-violet-400 shrink-0"></i>
+                        <span class="text-sm text-zinc-300 font-light">Diffusion : <strong class="text-white font-medium">19h - 22h (GMT+2)</strong></span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="map-pin" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+                        <span class="text-sm text-zinc-300 font-light">Basee au <strong class="text-white font-medium">Luxembourg</strong></span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="globe" class="w-4 h-4 text-blue-400 shrink-0"></i>
+                        <span class="text-sm text-zinc-300 font-light">Ecoute <strong class="text-white font-medium">mondiale</strong> via internet</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="languages" class="w-4 h-4 text-pink-400 shrink-0"></i>
+                        <span class="text-sm text-zinc-300 font-light">Langue principale: <strong class="text-white font-medium">Francais</strong></span>
+                    </div>
+                </div>
+            </div>
 
-    player.pause();
+            <!-- Lien contact -->
+            <div class="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5 text-center">
+                <i data-lucide="message-circle" class="w-8 h-8 text-violet-400 mx-auto mb-3"></i>
+                <p class="text-sm text-zinc-400 font-light">Vous souhaitez en savoir plus, collaborer ou partager une idée ?</p>
+                <button onclick="closePage(); setTimeout(()=>openPage('contacts'), 300)" class="mt-3 text-sm font-semibold text-violet-400 active:text-violet-300 transition-colors">Contactez-nous -></button>
+            </div>
 
-    // ✅ CACHER
-    btn.classList.remove("active");
-    btn.textContent = "▶ Play";
-    status.textContent = "Hors ligne";
-    dot.style.background = "#ff4b4b";
-    wave.classList.remove("active");
-  }
-});
+        </div>
+    </div>
 
-// états audio
-player.addEventListener("playing", () => {
-  btn.classList.add("active");
-  btn.textContent = "⏸ Pause";
-  status.textContent = "En direct";
-  dot.style.background = "#00ff88";
-  wave.classList.add("active");
-});
+    <!-- PAGE NEWS -->
+    <div class="page-panel fixed inset-x-0 bottom-0 z-50 bg-[#0f0f12] rounded-t-3xl max-h-[85dvh] flex flex-col" id="page-news">
+        <div class="shrink-0 flex items-center justify-between px-6 pt-5 pb-3 border-b border-white/5">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-violet-500/15 flex items-center justify-center">
+                    <i data-lucide="newspaper" class="w-4 h-4 text-violet-400"></i>
+                </div>
+                <h2 class="text-lg font-bold">Dernieres News</h2>
+            </div>
+            <button onclick="closePage()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center active:scale-90 transition-transform">
+                <i data-lucide="x" class="w-4 h-4 text-zinc-400"></i>
+            </button>
+        </div>
+        <div class="flex-1 overflow-y-auto no-scrollbar p-6 space-y-4">
+            <article class="expandable-card bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5 transition-colors" onclick="toggleExpand(this)">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-violet-400 bg-violet-500/10 px-2.5 py-1 rounded-full">Flash Infos</span>
+                    <span class="text-[11px] text-zinc-500">""</span>
+                    <div class="ml-auto"><i data-lucide="chevron-down" class="w-4 h-4 text-zinc-500 expand-chevron"></i></div>
+                </div>
+                <h3 class="font-semibold text-white mb-2 leading-snug">Persécution continue des baha'is en Iran</h3>
+                <p class="card-preview text-sm text-zinc-400 font-light leading-relaxed">Des nouvelles alarmantes du BWNews.</p>
+                <div class="expand-content">
+                    <div class="border-t border-white/[0.06] pt-3">
+                        <p class="text-sm text-zinc-300 font-light leading-relaxed">Des nouvelles alarmantes continuent d'affluer concernant la persécution systematique des baha'is en Iran. Malgré les appels internationaux pour le respect des droits humains, les autorités iraniennes persistent dans leurs politiques de discrimination et de repression à l'encontre de la communaute baha'ie. Des arrestations arbitraires, la confiscation de biens, l'interdiction d'accès à l'éducation superieure et la destruction de lieux de culte continuent d'être documentées par des organisations de défense des droits humains.</p>
+                    </div>
+                </div>
+            </article>
+            <article class="expandable-card bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5 transition-colors" onclick="toggleExpand(this)">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full">Communaute</span>
+                    <span class="text-[11px] text-zinc-500">""</span>
+                    <div class="ml-auto"><i data-lucide="chevron-down" class="w-4 h-4 text-zinc-500 expand-chevron"></i></div>
+                </div>
+                <h3 class="font-semibold text-white mb-2 leading-snug">Demarrage de la 2e phase du plan de 9 ans</h3>
+                <p class="card-preview text-sm text-zinc-400 font-light leading-relaxed">La construction communautaire et le partage du Message</p>
+                <div class="expand-content">
+                    <div class="border-t border-white/[0.06] pt-3">
+                        <p class="text-sm text-zinc-300 font-light leading-relaxed">La Maison universelle de justice a annoncé le lancement de la deuxieme phase du plan de neuf ans, une étape cruciale qui vise à intensifier les efforts de construction communautaire à travers le monde.</p>
+                    </div>
+                </div>
+            </article>
+            <article class="expandable-card bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5 transition-colors" onclick="toggleExpand(this)">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full">Social-Culture</span>
+                    <span class="text-[11px] text-zinc-500">En 2026</span>
+                    <div class="ml-auto"><i data-lucide="chevron-down" class="w-4 h-4 text-zinc-500 expand-chevron"></i></div>
+                </div>
+                <h3 class="font-semibold text-white mb-2 leading-snug">Fête de Ridvan au centre bahá'i à Luxembourg-ville</h3>
+                <p class="card-preview text-sm text-zinc-400 font-light leading-relaxed">Commémoration en presence du Conseiller Continental</p>
+                <div class="expand-content">
+                    <div class="border-t border-white/[0.06] pt-3">
+                        <p class="text-sm text-zinc-300 font-light leading-relaxed">La communaute bahá'ie du Luxembourg a célébre la Fête de Ridvan au centre bahá'i de Luxembourg-ville, en presence du Conseiller du Continent européen.</p>
+                    </div>
+                </div>
+            </article>
+            <article class="expandable-card bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5 transition-colors" onclick="toggleExpand(this)">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-orange-400 bg-orange-500/10 px-2.5 py-1 rounded-full">Environnement-Economie</span>
+                    <span class="text-[11px] text-zinc-500">En 2026</span>
+                    <div class="ml-auto"><i data-lucide="chevron-down" class="w-4 h-4 text-zinc-500 expand-chevron"></i></div>
+                </div>
+                <h3 class="font-semibold text-white mb-2 leading-snug">Les derniers développements économiques impactent les marches mondiaux</h3>
+                <p class="card-preview text-sm text-zinc-400 font-light leading-relaxed">Découvrez la selection d'évènements culturels à ne pas manquer.</p>
+                <div class="expand-content">
+                    <div class="border-t border-white/[0.06] pt-3">
+                        <p class="text-sm text-zinc-300 font-light leading-relaxed">Les récents bouleversements économiques continuent d'affecter les marches financiers mondiaux, avec des répercussions sur les taux de change, les matières premières et les investissements internationaux.</p>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
 
-player.addEventListener("pause", () => {
-  btn.classList.remove("active");
-  btn.textContent = "▶ Play";
-  status.textContent = "Hors ligne";
-  dot.style.background = "#ff4b4b";
-  wave.classList.remove("active");
-});
+    <!-- PAGE ANNONCES -->
+    <div class="page-panel fixed inset-x-0 bottom-0 z-50 bg-[#0f0f12] rounded-t-3xl max-h-[85dvh] flex flex-col" id="page-annonces">
+        <div class="shrink-0 flex items-center justify-between px-6 pt-5 pb-3 border-b border-white/5">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-blue-500/15 flex items-center justify-center">
+                    <i data-lucide="megaphone" class="w-4 h-4 text-blue-400"></i>
+                </div>
+                <h2 class="text-lg font-bold">Annonces & Evenements</h2>
+            </div>
+            <button onclick="closePage()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center active:scale-90 transition-transform">
+                <i data-lucide="x" class="w-4 h-4 text-zinc-400"></i>
+            </button>
+        </div>
+        <div class="flex-1 overflow-y-auto no-scrollbar p-6 space-y-4">
+            <div class="expandable-card bg-gradient-to-br from-blue-500/10 to-violet-500/10 border border-blue-500/20 rounded-2xl p-5" onclick="toggleExpand(this)">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                        <i data-lucide="store" class="w-5 h-5 text-blue-400"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-blue-400">Niveau International</span>
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-zinc-500 expand-chevron shrink-0 ml-auto"></i>
+                        </div>
+                        <h3 class="font-semibold text-white mt-1 mb-1">Persécutions</h3>
+                        <p class="card-preview text-sm text-zinc-400 font-light leading-relaxed">Iran</p>
+                        <div class="expand-content">
+                            <div class="border-t border-white/[0.06] pt-3 mt-2">
+                                <p class="text-sm text-zinc-300 font-light leading-relaxed">La persécution des bahá'is en Iran se poursuit de manière alarmante.</p>
+                                <span class="inline-block mt-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500 bg-white/5 px-2.5 py-1 rounded-full">Selon BWNS</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="expandable-card bg-gradient-to-br from-pink-500/10 to-orange-500/10 border border-pink-500/20 rounded-2xl p-5" onclick="toggleExpand(this)">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-pink-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                        <i data-lucide="music" class="w-5 h-5 text-pink-400"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-pink-400">Niveau National</span>
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-zinc-500 expand-chevron shrink-0 ml-auto"></i>
+                        </div>
+                        <h3 class="font-semibold text-white mt-1 mb-1">Lancement de la 2e phase du plan de 9 ans</h3>
+                        <p class="card-preview text-sm text-zinc-400 font-light leading-relaxed">Convention nationale.</p>
+                        <div class="expand-content">
+                            <div class="border-t border-white/[0.06] pt-3 mt-2">
+                                <p class="text-sm text-zinc-300 font-light leading-relaxed">La convention nationale a marqué le lancement officiel de la deuxieme phase du plan de neuf ans.</p>
+                                <span class="inline-block mt-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500 bg-white/5 px-2.5 py-1 rounded-full">Samedi-dimanche 2-3 mai</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="expandable-card bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 border border-emerald-500/20 rounded-2xl p-5" onclick="toggleExpand(this)">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                        <i data-lucide="briefcase" class="w-5 h-5 text-emerald-400"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-400">Niveau Local</span>
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-zinc-500 expand-chevron shrink-0 ml-auto"></i>
+                        </div>
+                        <h3 class="font-semibold text-white mt-1 mb-1">Formation des capacites</h3>
+                        <p class="card-preview text-sm text-zinc-400 font-light leading-relaxed">Institut bahá'i.</p>
+                        <div class="expand-content">
+                            <div class="border-t border-white/[0.06] pt-3 mt-2">
+                                <p class="text-sm text-zinc-300 font-light leading-relaxed">L'Institut bahá'i propose un programme de formation des capacités ouvert à tous.</p>
+                                <span class="inline-block mt-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500 bg-white/5 px-2.5 py-1 rounded-full">Contactez le centre bahá'i</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5 text-center">
+                <i data-lucide="radio" class="w-8 h-8 text-zinc-600 mx-auto mb-3"></i>
+                <p class="text-sm text-zinc-500 font-light">Vous souhaitez passer une annonce ?</p>
+                <button onclick="closePage(); setTimeout(()=>openPage('contacts'), 300)" class="mt-3 text-sm font-semibold text-violet-400 active:text-violet-300 transition-colors">Contactez-nous -></button>
+            </div>
+        </div>
+    </div>
 
-player.addEventListener("error", () => {
-  status.textContent = "Erreur flux";
-  dot.style.background = "orange";
-  wave.classList.remove("active");
-});
-</script>
+    <!-- PAGE CONTACTS -->
+    <div class="page-panel fixed inset-x-0 bottom-0 z-50 bg-[#0f0f12] rounded-t-3xl max-h-[85dvh] flex flex-col" id="page-contacts">
+        <div class="shrink-0 flex items-center justify-between px-6 pt-5 pb-3 border-b border-white/5">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-pink-500/15 flex items-center justify-center">
+                    <i data-lucide="mail" class="w-4 h-4 text-pink-400"></i>
+                </div>
+                <h2 class="text-lg font-bold">Contacts & Informations</h2>
+            </div>
+            <button onclick="closePage()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center active:scale-90 transition-transform">
+                <i data-lucide="x" class="w-4 h-4 text-zinc-400"></i>
+            </button>
+        </div>
+        <div class="flex-1 overflow-y-auto no-scrollbar p-6 space-y-4">
+           
+            <a href="mailto:radiognews19@gmail.com" class="flex items-center gap-4 bg-white/[0.03] border border-white/[0.06] rounded-2xl p-4 active:bg-white/[0.06] transition-colors active:scale-[0.98]">
+                <div class="w-12 h-12 rounded-xl bg-blue-500/15 flex items-center justify-center shrink-0">
+                    <i data-lucide="at-sign" class="w-5 h-5 text-blue-400"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-blue-400">Email</p>
+                    <p class="text-white font-medium mt-0.5 truncate">radiognews19@gmail.com</p>
+                </div>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-zinc-600 shrink-0"></i>
+            </a>
+            <div class="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-violet-500/15 flex items-center justify-center shrink-0">
+                        <i data-lucide="globe" class="w-5 h-5 text-violet-400"></i>
+                    </div>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-violet-400">Sites web</p>
+                </div>
+                <div class="space-y-1 ml-1 mt-3">
+                    <a href="https://www.religare.org/" class="flex items-center gap-3 py-2.5 px-3 rounded-xl hover:bg-white/[0.04] active:bg-white/[0.06] active:scale-[0.98] transition-all">
+                        <i data-lucide="book-open" class="w-4 h-4 text-violet-400 shrink-0"></i>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-white font-medium text-sm">Ecrits Sacrés</p>
+                            <p class="text-zinc-500 text-[11px]">religare.org</p>
+                        </div>
+                        <i data-lucide="external-link" class="w-3.5 h-3.5 text-zinc-600 shrink-0"></i>
+                    </a>
+                    <a href="https://www.bahai.lu/" class="flex items-center gap-3 py-2.5 px-3 rounded-xl hover:bg-white/[0.04] active:bg-white/[0.06] active:scale-[0.98] transition-all">
+                        <i data-lucide="map-pin" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-white font-medium text-sm">Bahá'is du Luxembourg</p>
+                            <p class="text-zinc-500 text-[11px]">bahai.lu</p>
+                        </div>
+                        <i data-lucide="external-link" class="w-3.5 h-3.5 text-zinc-600 shrink-0"></i>
+                    </a>
+                    <a href="https://www.bahai.org/" class="flex items-center gap-3 py-2.5 px-3 rounded-xl hover:bg-white/[0.04] active:bg-white/[0.06] active:scale-[0.98] transition-all">
+                        <i data-lucide="globe" class="w-4 h-4 text-blue-400 shrink-0"></i>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-white font-medium text-sm">Communauté mondiale</p>
+                            <p class="text-zinc-500 text-[11px]">bahai.org</p>
+                        </div>
+                        <i data-lucide="external-link" class="w-3.5 h-3.5 text-zinc-600 shrink-0"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="pt-2">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-3 px-1">Suivez-nous</p>
+                <div class="grid grid-cols-4 gap-3">
+                    <a href="#" class="flex flex-col items-center gap-2 py-3 rounded-2xl bg-white/[0.03] border border-white/[0.06] active:bg-white/[0.06] active:scale-95 transition-all">
+                        <i data-lucide="facebook" class="w-5 h-5 text-blue-400"></i>
+                        <span class="text-[9px] font-semibold uppercase tracking-wider text-zinc-500">Facebook</span>
+                    </a>
+                    <a href="https://chat.whatsapp.com/LaXskJ5keQD7M4xbkTtNFa" class="flex flex-col items-center gap-2 py-3 rounded-2xl bg-white/[0.03] border border-white/[0.06] active:bg-white/[0.06] active:scale-95 transition-all">
+                        <i data-lucide="Whatsap" class="w-5 h-5 text-pink-400"></i>
+                        <span class="text-[9px] font-semibold uppercase tracking-wider text-zinc-500">Whatsap</span>
+                    </a>
+                    <a href="#" class="flex flex-col items-center gap-2 py-3 rounded-2xl bg-white/[0.03] border border-white/[0.06] active:bg-white/[0.06] active:scale-95 transition-all">
+                        <i data-lucide="twitter" class="w-5 h-5 text-cyan-400"></i>
+                        <span class="text-[9px] font-semibold uppercase tracking-wider text-zinc-500">Twitter</span>
+                    </a>
+                    <a href="https://www.youtube.com/@hamidbaki19" class="flex flex-col items-center gap-2 py-3 rounded-2xl bg-white/[0.03] border border-white/[0.06] active:bg-white/[0.06] active:scale-95 transition-all">
+                        <i data-lucide="youtube" class="w-5 h-5 text-red-400"></i>
+                        <span class="text-[9px] font-semibold uppercase tracking-wider text-zinc-500">YouTube</span>
+                    </a>
+                </div>
+            </div>
+            <div class="pt-2 pb-4">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-3 px-1">Envoyer un message</p>
+                <form onsubmit="sendMessage(event)" class="space-y-3">
+                    <input type="text" placeholder="Votre nom" required class="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 transition-all">
+                    <input type="email" placeholder="Votre email" required class="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 transition-all">
+                    <textarea placeholder="Votre message..." rows="3" required class="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 transition-all resize-none"></textarea>
+                    <button type="submit" class="w-full bg-gradient-to-r from-violet-600 to-blue-600 text-white font-semibold text-sm py-3.5 rounded-xl active:scale-[0.98] transition-transform shadow-lg shadow-violet-500/20">
+                        Envoyer le message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 
+    <!-- ===== Debug panel ===== -->
+    <div class="debug-panel" id="debugPanel"></div>
+    <button class="debug-toggle" id="debugToggle" onclick="toggleDebug()">?</button>
+    <button class="debug-test-btn" id="debugTestBtn" onclick="testCategoryParsing()">TEST</button>
+
+    <audio id="radioAudio" preload="none"></audio>
+
+    <script>
+        const STREAM_URL = "https://fpsnew2.listen2myradio.com:2199/listen.php?ip=212.84.160.3&port=5360&type=s1";
+        const LOGO_URL = "logo.jpg";
+        const SC_HOST = "212.84.160.3";
+        const SC_PORT = "5360";
+
+        // ================================================================
+        // PROXIES CORS - Mis a jour le 10/05/2026
+        // Seuls les proxies fonctionnels sont conserves.
+        // Les proxies morts ont ete retires :
+        //   - corsproxy.io (403, plan payant requis)
+        //   - cors.sh (n'existe plus)
+        //   - crossorigin.me (connexion refusee)
+        // ================================================================
+        const CORS_PROXIES = [
+            "https://api.codetabs.com/v1/proxy/?quest=",
+            "https://api.allorigins.win/raw?url=",
+            "https://corsproxy.io/?",
+            "https://api.cors.lol/?url="
+        ];
+
+        // Proxy JSON AllOrigins - retourne {contents, status} en JSON
+        const JSON_PROXY = "https://api.allorigins.win/get?url=";
+
+        // Reponses invalides a filtrer (jamais affichees comme titre)
+        const BAD_PATTERNS = [
+            'shoutcast', 'invalid resource', 'forbidden',
+            'not found', 'access denied', 'unauthorized', 'bad request',
+            'server error', 'page not found', 'file not found',
+            'resource is not available', 'could not parse',
+            'icecast', 'listen2myradio', 'icy-notice', 'content-type'
+        ];
+
+        let metadataInterval = null;
+        let lastKnownTitle = null;
+        let metadataFetchCount = 0;
+        let isFetchingMetadata = false;
+        let consecutiveFailures = 0;
+        let isPlaying = false;
+        let isMuted = false;
+        let previousVolume = 80;
+        let isConnecting = false;
+        const audio = document.getElementById('radioAudio');
+
+        // ===== Debug visuel =====
+        let debugVisible = false;
+        const debugLines = [];
+        const MAX_DEBUG_LINES = 50;
+
+        function debugLog(msg, type) {
+            type = type || 'info';
+            const line = { msg: msg, type: type, time: new Date().toLocaleTimeString() };
+            debugLines.push(line);
+            if (debugLines.length > MAX_DEBUG_LINES) debugLines.shift();
+            renderDebug();
+            console.log('[Debug][' + type + '] ' + msg);
+        }
+
+        function renderDebug() {
+            const panel = document.getElementById('debugPanel');
+            if (!panel || !debugVisible) return;
+            panel.innerHTML = debugLines.map(l =>
+                '<div class="debug-line ' + l.type + '">' + l.time + ' ' + l.msg + '</div>'
+            ).join('');
+            panel.scrollTop = panel.scrollHeight;
+        }
+
+        function toggleDebug() {
+            debugVisible = !debugVisible;
+            const panel = document.getElementById('debugPanel');
+            const testBtn = document.getElementById('debugTestBtn');
+            if (panel) panel.classList.toggle('visible', debugVisible);
+            if (testBtn) testBtn.classList.toggle('visible', debugVisible);
+            if (debugVisible) renderDebug();
+        }
+
+        function testCategoryParsing() {
+            const testTitles = [
+                'PODCAST: Bâtir-une-société-nouvelle',
+                'NEWS: Flash info du jour',
+                'JINGLE: station-id',
+                'PUB: Annonce partenaire',
+                'CITATION: Verset du jour',
+                'MUSIQUE: Artist - Song',
+                'PODCAST - Autre émission',
+                'Artiste - Titre sans catégorie'
+            ];
+            debugLog('=== TEST CATEGORY PARSING ===', 'info');
+            for (const t of testTitles) {
+                const result = parseCategory(t);
+                debugLog('"' + t + '" → ' + result.category + ' / "' + result.displayTitle + '"', 'ok');
+            }
+            // Also test with the current extraction flow
+            debugLog('Force updateSongTitle avec "PODCAST: Bâtir-une-société-nouvelle"', 'warn');
+            updateSongTitle('PODCAST: Bâtir-une-société-nouvelle');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            createParticles();
+            audio.volume = 0.8;
+            setupMediaSession();
+            setupCapacitorPlugins();
+        });
+
+        function setupCapacitorPlugins() {
+            try {
+                if (window.Capacitor && window.Capacitor.isNativePlatform()) {
+                    console.log('[Capacitor] Plateforme native detectee');
+                }
+            } catch(e) {}
+            try {
+                if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
+                    window.Capacitor.Plugins.App.addListener('backButton', ({ canGoBack }) => {
+                        if (currentPage) { closePage(); }
+                        else if (canGoBack) { window.Capacitor.Plugins.App.exitApp(); }
+                    });
+                }
+            } catch(e) {}
+        }
+
+        function setupMediaSession() {
+            if (!('mediaSession' in navigator)) return;
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: 'GNews Radio',
+                artist: 'En direct',
+                album: 'Unite dans la Diversite',
+                artwork: [
+                    { src: LOGO_URL, sizes: '512x512', type: 'image/jpeg' },
+                    { src: LOGO_URL, sizes: '192x192', type: 'image/jpeg' },
+                ]
+            });
+            navigator.mediaSession.setActionHandler('play', () => playRadio());
+            navigator.mediaSession.setActionHandler('pause', () => stopRadio());
+            navigator.mediaSession.setActionHandler('stop', () => stopRadio());
+        }
+
+        function updateMediaSessionState(playing) {
+            if (!('mediaSession' in navigator)) return;
+            navigator.mediaSession.playbackState = playing ? 'playing' : 'paused';
+        }
+
+        // ===== Validation du titre =====
+        function isValidTitle(text) {
+            if (!text || text.trim().length <= 1) return false;
+            const lower = text.toLowerCase().trim();
+            for (const bad of BAD_PATTERNS) {
+                if (lower.includes(bad)) return false;
+            }
+            if (lower === 'gnews radio') return false;
+            if (text.length > 200) return false;
+            // Only reject if title is ENTIRELY punctuation/question marks/spaces (no letters at all)
+            if (!/[a-zA-ZÀ-ÿ]/.test(text)) return false;
+            return true;
+        }
+
+        function cleanText(raw) {
+            return raw.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+        }
+
+        function stripShoutcastStats(text) {
+            if (!text) return text;
+            const cleaned = text.trim();
+            const match = cleaned.match(/^(\d+\s*,\s*){5}\d+\s*,\s*(.+)$/);
+            if (match) {
+                return match[2].trim();
+            }
+            return cleaned;
+        }
+
+        // ===== Affichage du titre =====
+        let currentDisplayedTitle = '';
+        let currentCategory = 'music';
+        let lastTitleUpdateTime = null;
+
+        // ================================================================
+        // CATEGORIES - Definitions des categories de contenu
+        // Support de multiples formats de prefix envoyes par le serveur :
+        //   - "JINGLE: titre"    (format avec deux-points)
+        //   - "JINGLE - titre"   (format avec tiret)
+        //   - "JINGLE : titre"   (format avec espaces)
+        //   - "Jingle titre"     (mot-cle en debut de titre)
+        // ================================================================
+        const CATEGORIES = {
+            jingle:   { label: 'Jingle',    cssClass: 'cat-jingle',   icon: 'volume-2',   keywords: ['JINGLE'] },
+            pub:      { label: 'Pub',        cssClass: 'cat-pub',      icon: 'megaphone',  keywords: ['PUB', 'PUBLICITE', 'PUBLICITÉ', 'PUBRICITE'] },
+            news:     { label: 'News',       cssClass: 'cat-news',     icon: 'newspaper',  keywords: ['NEWS', 'FLASH', 'INFO', 'INFOS', 'JOURNAL'] },
+            podcast:  { label: 'Podcast',    cssClass: 'cat-podcast',  icon: 'mic',        keywords: ['PODCAST', 'EMISSION', 'ÉMISSION'] },
+            citation: { label: 'Citation',   cssClass: 'cat-citation', icon: 'book',       keywords: ['CITATION', 'CITE', 'CITÉ', 'PROVERBE', 'VERSET'] },
+            music:    { label: 'Musique',    cssClass: 'cat-music',    icon: 'music',      keywords: ['MUSIQUE', 'MUSIC'] }
+        };
+
+        // Ordre de priorite pour la detection (les categories speciales d'abord,
+        // music en dernier car c'est le defaut)
+        const CATEGORY_ORDER = ['jingle', 'pub', 'news', 'podcast', 'citation', 'music'];
+
+        function parseCategory(rawTitle) {
+            if (!rawTitle) return { category: 'music', displayTitle: rawTitle };
+
+            const trimmed = rawTitle.trim();
+
+            // Titres generiques du serveur (sans vrai titre d'artiste)
+            // ex: "MUSIQUE", "MUSIQUE 1", "MUSIQUE 2", etc.
+            const genericPatterns = /^MUSIQUE\s*\d*$/i;
+            if (genericPatterns.test(trimmed)) {
+                return { category: 'music', displayTitle: null };
+            }
+
+            // On essaie chaque categorie dans l'ordre de priorite
+            for (const catKey of CATEGORY_ORDER) {
+                const catInfo = CATEGORIES[catKey];
+                if (!catInfo.keywords) continue;
+
+                for (const keyword of catInfo.keywords) {
+                    // Regex flexible : accepte "KEYWORD:", "KEYWORD :", "KEYWORD - ",
+                    // "KEYWORD: ", "KEYWORD -", avec optionnellement des espaces
+                    // On construit le pattern : KEYWORD suivi de [:] ou [ -] ou [ —]
+                    const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const pattern = new RegExp(
+                        '^' + escaped + '\\s*' +           // KEYWORD + espaces optionnels
+                        '(?:' +
+                          ':\\s*|' +                        // deux-points + espaces
+                          '-\\s+|' +                        // tiret + espace(s)
+                          '—\\s+|' +                        // tiret long + espace(s)
+                          '\\s+' +                          // juste un ou plusieurs espaces
+                        ')',
+                        'i'
+                    );
+
+                    const match = trimmed.match(pattern);
+                    if (match) {
+                        let displayTitle = trimmed.substring(match[0].length).trim();
+
+                        // Traitement specifique par categorie
+                        if (catKey === 'jingle') {
+                            displayTitle = 'En attente du prochain titre';
+                        } else if (catKey === 'pub') {
+                            if (displayTitle) {
+                                displayTitle = 'Publicite - ' + displayTitle;
+                            } else {
+                                displayTitle = 'Publicite - Annonce';
+                            }
+                        } else if (catKey === 'music') {
+                            // Si le titre est juste "MUSIQUE" avec rien apres, c'est generique
+                            if (!displayTitle) displayTitle = null;
+                        }
+
+                        // Nettoyer les tirets restants dans le titre d'affichage
+                        // ex: "Bâtir-une-société-nouvelle" → "Bâtir une société nouvelle"
+                        if (displayTitle && catKey !== 'jingle') {
+                            displayTitle = displayTitle
+                                .replace(/-(?=[a-zA-ZÀ-ÿ])/g, ' ')  // tiret entre lettres → espace
+                                .replace(/\s+/g, ' ')                 // espaces multiples → un seul
+                                .trim();
+                        }
+
+                        console.log('[Categorie] Detecte: ' + catKey + ' | Titre brut: "' + trimmed + '" | Titre affiche: "' + displayTitle + '"');
+                        debugLog('Catégorie: ' + catKey + ' → ' + displayTitle, 'ok');
+
+                        return { category: catKey, displayTitle: displayTitle };
+                    }
+                }
+            }
+
+            // Aucun prefix de categorie detecte → categorie par defaut : musique
+            console.log('[Categorie] Non detecte (defaut: music) | Titre: "' + trimmed + '"');
+            debugLog('Catégorie: défaut (music) | ' + trimmed, 'warn');
+            return { category: 'music', displayTitle: rawTitle };
+        }
+
+        function updateCategoryBadge(category) {
+            const badge = document.getElementById('catBadge');
+            if (!badge) return;
+
+            const catInfo = CATEGORIES[category] || CATEGORIES.music;
+
+            // Mettre a jour la classe CSS et le contenu avec icone
+            badge.className = 'cat-badge ' + catInfo.cssClass;
+            badge.innerHTML = '<i data-lucide="' + catInfo.icon + '" style="width:10px;height:10px;"></i> ' + catInfo.label;
+
+            // Re-rendre les icones lucide pour le badge
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        function cleanDisplayTitle(title) {
+            if (!title) return title;
+            // Remplacer les sequences de ?? par des espaces (signe d'encodage rate)
+            let cleaned = title.replace(/\?{2,}/g, ' ');
+            // Remplacer les caracteres de remplacement Unicode
+            cleaned = cleaned.replace(/\uFFFD/g, ' ');
+            // Nettoyer les espaces multiples
+            cleaned = cleaned.replace(/\s+/g, ' ').trim();
+            // Si le titre ne contient plus rien d'exploitable, retourner null
+            if (cleaned.length === 0 || /^[\s\.]+$/.test(cleaned)) {
+                return null;
+            }
+            return cleaned;
+        }
+
+        function updateSongTitle(title) {
+            const el = document.getElementById('songTitle');
+            const container = document.getElementById('songTitleContainer');
+            const row = document.getElementById('songTitleRow');
+            const statusEl = document.getElementById('titleStatus');
+            if (!el) return;
+
+            if (!title || !isValidTitle(title)) {
+                if (lastKnownTitle && isPlaying) {
+                    const parsed = parseCategory(lastKnownTitle);
+                    const cleanedLast = cleanDisplayTitle(parsed.displayTitle);
+                    if (cleanedLast) {
+                        updateCategoryBadge(parsed.category);
+                        el.textContent = cleanedLast;
+                    } else {
+                        el.textContent = lastKnownTitle;
+                    }
+                    if (statusEl) statusEl.textContent = '';
+                } else {
+                    el.textContent = isPlaying ? 'En attente du titre...' : '--';
+                    debugLog('Aucun titre valide - affichage par défaut', 'warn');
+                    el.classList.remove('scrolling');
+                    el.style.transform = '';
+                    if (container) container.classList.remove('has-overflow');
+                    if (statusEl) statusEl.textContent = '';
+                    updateCategoryBadge('music');
+                }
+                return;
+            }
+
+            const parsed = parseCategory(title);
+            const cleanedTitle = cleanDisplayTitle(parsed.displayTitle);
+
+            if (!cleanedTitle) {
+                if (lastKnownTitle && isPlaying) {
+                    const parsedLast = parseCategory(lastKnownTitle);
+                    const cleanedLast = cleanDisplayTitle(parsedLast.displayTitle);
+                    if (cleanedLast) {
+                        updateCategoryBadge(parsedLast.category);
+                        el.textContent = cleanedLast;
+                    } else {
+                        el.textContent = lastKnownTitle;
+                    }
+                } else {
+                    el.textContent = isPlaying ? 'En attente du titre...' : '--';
+                    el.classList.remove('scrolling');
+                    el.style.transform = '';
+                    if (container) container.classList.remove('has-overflow');
+                    updateCategoryBadge('music');
+                }
+                return;
+            }
+
+            const changed = cleanedTitle !== currentDisplayedTitle || parsed.category !== currentCategory;
+            if (changed) {
+                currentDisplayedTitle = cleanedTitle;
+                currentCategory = parsed.category;
+                lastTitleUpdateTime = Date.now();
+
+                updateCategoryBadge(parsed.category);
+
+                el.textContent = cleanedTitle;
+                debugLog('Affichage: [' + parsed.category + '] ' + cleanedTitle, 'ok');
+                el.classList.remove('scrolling');
+                el.style.transform = '';
+                if (container) container.classList.remove('has-overflow');
+                if (statusEl) statusEl.textContent = '';
+
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        const textWidth = el.scrollWidth;
+                        const containerWidth = container ? container.clientWidth : 260;
+                        const availableWidth = containerWidth;
+                        const overflow = textWidth - availableWidth;
+
+                        console.log('[Titre] [' + parsed.category + '] "' + cleanedTitle + '" texte=' + Math.round(textWidth) + 'px dispo=' + Math.round(availableWidth) + 'px overflow=' + Math.round(overflow) + 'px');
+
+                        if (overflow > 10) {
+                            const distance = -overflow - 10;
+                            const duration = Math.max(4, Math.round(overflow / 25));
+                            el.style.setProperty('--scroll-distance', distance + 'px');
+                            el.style.setProperty('--scroll-duration', duration + 's');
+                            el.classList.add('scrolling');
+                            if (container) container.classList.add('has-overflow');
+                        }
+                    });
+                });
+            }
+        }
+
+        // ================================================================
+        // ===== EXTRACTION DES METADONNEES ICY DU FLUX STREAM ==========
+        // ================================================================
+        // Puisque les endpoints HTTP Shoutcast (/currentsong, /7.html)
+        // sont desactives par listen2myradio (ICY 404), on extrait le
+        // titre directement depuis les blocs de metadonnees ICY embarques
+        // dans le flux audio (StreamTitle='...' tous les icy-metaint bytes).
+        //
+        // Methode : on ouvre le flux via un proxy CORS, on lit les
+        // premieres donnees (~100-120 Ko, soit 2-3 blocs de metadonnees),
+        // et on y cherche le pattern StreamTitle='...'
+        // ================================================================
+
+        function cacheBust() {
+            return '_t=' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+        }
+
+        const FETCH_OPTS = {
+            cache: 'no-store',
+            headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache, no-store, must-revalidate' }
+        };
+
+        /**
+         * Lit un flux audio via proxy CORS et extrait le StreamTitle ICY.
+         * Le flux est lu en mode ReadableStream, limite a MAX_BYTES.
+         * On cherche le pattern StreamTitle='...' dans les donnees brutes.
+         */
+        async function fetchTitleViaICYStream(proxyUrl, targetUrl) {
+            try {
+                const bustUrl = proxyUrl + encodeURIComponent(targetUrl) + '&' + cacheBust();
+                const response = await fetch(bustUrl, {
+                    ...FETCH_OPTS,
+                    signal: AbortSignal.timeout(15000)
+                });
+
+                if (!response.ok) return null;
+
+                // Tenter de lire en streaming pour ne pas telecharger tout le flux
+                if (response.body && response.body.getReader) {
+                    const reader = response.body.getReader();
+                    const MAX_BYTES = 120000; // ~120 Ko : assez pour 3+ blocs ICY (metaint=32768)
+                    let allData = new Uint8Array(0);
+                    let totalRead = 0;
+
+                    while (totalRead < MAX_BYTES) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+
+                        const newData = new Uint8Array(allData.length + value.length);
+                        newData.set(allData);
+                        newData.set(value, allData.length);
+                        allData = newData;
+                        totalRead += value.length;
+
+                        // Verifier si on a deja trouve StreamTitle (optimisation)
+                        const partial = new TextDecoder('utf-8', { fatal: false }).decode(allData);
+                        let title = extractStreamTitle(partial);
+                        if (title) {
+                            try { reader.cancel(); } catch(e) {}
+                            title = fixMojibake(title);
+                            title = sanitizeTitle(title);
+                            console.log('[ICY] Titre extrait:', title);
+                            debugLog('ICY extrait: ' + title, 'info');
+                            if (isValidTitle(title)) return title;
+                            // Titre extrait mais rejeté par isValidTitle - on le retourne quand même
+                            // car parseCategory() peut encore détecter la catégorie
+                            console.warn('[ICY] Titre rejeté par isValidTitle mais conservé:', title);
+                            return title;
+                        }
+                    }
+
+                    try { reader.cancel(); } catch(e) {}
+
+                    // Recherche finale dans toutes les donnees recues
+                    const text = new TextDecoder('utf-8', { fatal: false }).decode(allData);
+                    let title = extractStreamTitle(text);
+                    if (title) {
+                        title = fixMojibake(title);
+                        title = sanitizeTitle(title);
+                        console.log('[ICY] Titre extrait (final):', title);
+                        debugLog('ICY extrait (final): ' + title, 'info');
+                        if (isValidTitle(title)) return title;
+                        // Titre extrait mais rejeté par isValidTitle - on le retourne quand même
+                        // car parseCategory() peut encore détecter la catégorie
+                        console.warn('[ICY] Titre rejeté par isValidTitle mais conservé:', title);
+                        return title;
+                    }
+                } else {
+                    // Fallback : lire la reponse entiere (si pas de ReadableStream)
+                    const buffer = await response.arrayBuffer();
+                    const text = new TextDecoder('utf-8', { fatal: false }).decode(buffer);
+                    let title = extractStreamTitle(text);
+                    if (title) {
+                        title = fixMojibake(title);
+                        title = sanitizeTitle(title);
+                        console.log('[ICY] Titre extrait (fallback):', title);
+                        debugLog('ICY extrait (fallback): ' + title, 'info');
+                        if (isValidTitle(title)) return title;
+                        // Titre extrait mais rejeté par isValidTitle - on le retourne quand même
+                        // car parseCategory() peut encore détecter la catégorie
+                        console.warn('[ICY] Titre rejeté par isValidTitle mais conservé:', title);
+                        return title;
+                    }
+                }
+            } catch (e) {
+                // Timeout ou erreur reseau - normal pour un flux infini
+            }
+            return null;
+        }
+
+        /**
+         * Extrait le StreamTitle d'un bloc de metadonnees ICY.
+         * Supporte plusieurs formats :
+         *   StreamTitle='titre';
+         *   StreamTitle='titre avec apostrophe \\' ;
+         *   StreamTitle="titre";
+         *   StreamTitle=titre;
+         * Plus tolerant que l'ancien regex qui coupait sur les apostrophes.
+         */
+        function extractStreamTitle(text) {
+            if (!text) return null;
+
+            // Methode 1 : StreamTitle='...' avec guillemets simples
+            // On cherche StreamTitle=' puis on prend tout jusqu'au '; final
+            // (le point-virgule est le delimiteur ICY, pas l'apostrophe)
+            let match = text.match(/StreamTitle='((?:[^'\\]|\\.)*)'\s*;/i);
+            if (match && match[1]) {
+                let title = match[1].replace(/\\'/g, "'").trim();
+                if (title) return title;
+            }
+
+            // Methode 2 : StreamTitle="..." avec guillemets doubles
+            match = text.match(/StreamTitle="((?:[^"\\]|\\.)*)"\s*;/i);
+            if (match && match[1]) {
+                let title = match[1].replace(/\\"/g, '"').trim();
+                if (title) return title;
+            }
+
+            // Methode 3 : StreamTitle='...' sans point-virgule final (parfois absent)
+            match = text.match(/StreamTitle='([^']{1,200})'/i);
+            if (match && match[1]) {
+                return match[1].trim();
+            }
+
+            // Methode 4 : Format sans guillemets StreamTitle=titre;
+            match = text.match(/StreamTitle=([^;]{1,200});/i);
+            if (match && match[1]) {
+                let title = match[1].trim().replace(/^['"]|['"]$/g, '');
+                if (title) return title;
+            }
+
+            return null;
+        }
+
+        /**
+         * Nettoie un titre de ses caracteres corrompus ou de remplacement.
+         * Les caracteres Unicode U+FFFD (remplacement) et les sequences de ??
+         * sont signes d'un probleme d'encodage.
+         * On les remplace intelligemment au lieu de les supprimer.
+         */
+        function sanitizeTitle(title) {
+            if (!title) return title;
+
+            // Remplacer les caracteres de remplacement Unicode (U+FFFD) par des espaces
+            let cleaned = title.replace(/\uFFFD/g, ' ');
+
+            // Remplacer les sequences de ?? par un espace (signe d'encodage rate)
+            cleaned = cleaned.replace(/\?{2,}/g, ' ');
+
+            // Nettoyer les espaces multiples
+            cleaned = cleaned.replace(/\s+/g, ' ').trim();
+
+            // Si le titre est vide apres nettoyage, retourner null
+            if (cleaned.length === 0) return null;
+
+            return cleaned;
+        }
+
+        /**
+         * Essaie d'extraire le titre via AllOrigins JSON API.
+         * Le contenu est retourne en base64 pour les donnees binaires.
+         */
+        async function fetchTitleViaAllOriginsJSON(targetUrl) {
+            try {
+                const bustUrl = JSON_PROXY + encodeURIComponent(targetUrl) + '&' + cacheBust();
+                const response = await fetch(bustUrl, {
+                    ...FETCH_OPTS,
+                    signal: AbortSignal.timeout(12000)
+                });
+
+                if (!response.ok) return null;
+                const data = await response.json();
+
+                if (data && data.contents) {
+                    let text = data.contents;
+                    text = fixMojibake(text);
+
+                    // Chercher StreamTitle dans le contenu avec la methode robuste
+                    let title = extractStreamTitle(text);
+                    if (title) {
+                        title = sanitizeTitle(title);
+                        console.log('[AllOrigins] Titre extrait:', title);
+                        if (isValidTitle(title)) return title;
+                        console.warn('[AllOrigins] Titre rejeté par isValidTitle mais conservé:', title);
+                        return title;
+                    }
+                }
+            } catch (e) {}
+            return null;
+        }
+
+        // ===== Polling des metadonnees =====
+        function startMetadataPolling() {
+            stopMetadataPolling();
+            metadataFetchCount = 0;
+            consecutiveFailures = 0;
+            isFetchingMetadata = false;
+            fetchStreamMetadata();
+            scheduleNextPoll();
+        }
+
+        function scheduleNextPoll() {
+            stopMetadataPolling();
+            // Delai adapte : plus long si echecs repetes
+            const delay = consecutiveFailures >= 5 ? 20000 : 10000;
+            metadataInterval = setTimeout(() => {
+                fetchStreamMetadata().then(() => scheduleNextPoll());
+            }, delay);
+        }
+
+        function stopMetadataPolling() {
+            if (metadataInterval) {
+                clearTimeout(metadataInterval);
+                metadataInterval = null;
+            }
+        }
+
+        // Decodage et correction du texte
+        function decodeBuffer(buffer) {
+            const bytes = new Uint8Array(buffer);
+            const hasHighBytes = Array.from(bytes).some(b => b > 0x7F);
+
+            try {
+                const text = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+                if (!text.includes('\uFFFD')) return text;
+            } catch(e) {}
+
+            if (!hasHighBytes) {
+                return new TextDecoder('utf-8', { fatal: false }).decode(bytes);
+            }
+
+            try {
+                return new TextDecoder('windows-1252').decode(bytes);
+            } catch(e) {}
+
+            return new TextDecoder('utf-8', { fatal: false }).decode(bytes);
+        }
+
+        function hasReplacementQuestionMarks(text) {
+            if (!text) return false;
+            return /\?{2,}/.test(text) || (text.includes('?') && text.length > 3 && (text.match(/\?/g) || []).length >= 2);
+        }
+
+        function fixMojibake(text) {
+            if (!text) return text;
+
+            if (!/[\u00C0-\u00DF][\u0080-\u00BF]/.test(text)) {
+                return text;
+            }
+
+            try {
+                const bytes = new Uint8Array(text.length);
+                let allInRange = true;
+                for (let i = 0; i < text.length; i++) {
+                    const code = text.charCodeAt(i);
+                    if (code > 0xFF) {
+                        allInRange = false;
+                        break;
+                    }
+                    bytes[i] = code;
+                }
+
+                if (!allInRange) return text;
+
+                const decoded = new TextDecoder('utf-8', { fatal: false }).decode(bytes);
+
+                const beforeBad = (text.match(/\uFFFD/g) || []).length;
+                const afterBad = (decoded.match(/\uFFFD/g) || []).length;
+                const improved = afterBad <= beforeBad && decoded.length < text.length;
+
+                if (improved) return decoded;
+            } catch(e) {}
+
+            return text;
+        }
+
+        // ===== Tentative d'extraction via endpoints HTTP Shoutcast (fallback) =====
+        async function trySingleProxy(proxy, targetUrl) {
+            try {
+                const bustUrl = proxy + encodeURIComponent(targetUrl) + '&' + cacheBust();
+                const resp = await fetch(bustUrl, {
+                    ...FETCH_OPTS,
+                    signal: AbortSignal.timeout(8000)
+                });
+                if (resp.ok) {
+                    const buffer = await resp.arrayBuffer();
+                    let text = decodeBuffer(buffer);
+                    text = fixMojibake(text);
+                    if (text && text.trim().length > 0) return text;
+                }
+            } catch (e) {}
+            return null;
+        }
+
+        async function fetchViaProxy(targetUrl) {
+            const results = await Promise.allSettled(
+                CORS_PROXIES.map(proxy => trySingleProxy(proxy, targetUrl))
+            );
+
+            let bestResult = null;
+            let bestQuality = -1;
+
+            for (const result of results) {
+                if (result.status !== 'fulfilled' || !result.value) continue;
+                const text = result.value;
+                const qMarks = (text.match(/\?/g) || []).length;
+                const quality = text.length - qMarks * 3;
+                if (!hasReplacementQuestionMarks(text)) return text;
+                if (quality > bestQuality) {
+                    bestResult = text;
+                    bestQuality = quality;
+                }
+            }
+
+            return bestResult;
+        }
+
+        async function fetchDirect(url) {
+            try {
+                const resp = await fetch(url + (url.includes('?') ? '&' : '?') + cacheBust(), {
+                    ...FETCH_OPTS,
+                    mode: 'cors',
+                    signal: AbortSignal.timeout(5000)
+                });
+                if (resp.ok) {
+                    const buffer = await resp.arrayBuffer();
+                    let text = decodeBuffer(buffer);
+                    text = fixMojibake(text);
+                    return text;
+                }
+            } catch (e) {}
+            return null;
+        }
+
+        function tryExtractTitle(text, source) {
+            if (!text) return null;
+
+            const bodyMatch = text.match(/<body[^>]*>([^<]+)<\/body>/i);
+            if (bodyMatch) {
+                const bodyContent = bodyMatch[1].trim();
+                const stripped = stripShoutcastStats(bodyContent);
+                if (isValidTitle(stripped)) return stripped;
+            }
+
+            const hasHtml = /<[a-z][^>]*>/i.test(text);
+            if (!hasHtml) {
+                const stripped = stripShoutcastStats(text.trim());
+                if (isValidTitle(stripped)) return stripped;
+            }
+
+            if (bodyMatch) {
+                const cleaned = cleanText(bodyMatch[1]);
+                const stripped = stripShoutcastStats(cleaned);
+                if (isValidTitle(stripped)) return stripped;
+            }
+
+            const rowMatch = text.match(/<tr>\s*<td[^>]*>[^<]*<\/td>\s*<td[^>]*>([^<]+)<\/td>/i);
+            if (rowMatch) {
+                const t = stripShoutcastStats(rowMatch[1].trim());
+                if (isValidTitle(t)) return t;
+            }
+
+            try {
+                const data = JSON.parse(text);
+                const keys = ['song','title','now_playing','current_song','songtitle','np'];
+                for (const key of keys) {
+                    const val = (data[key] || '').trim();
+                    if (isValidTitle(val)) return val;
+                }
+                if (data.icestats && data.icestats.source) {
+                    const sources = Array.isArray(data.icestats.source) ? data.icestats.source : [data.icestats.source];
+                    for (const src of sources) {
+                        const t = (src.title || '').trim();
+                        if (isValidTitle(t)) return t;
+                    }
+                }
+            } catch (e) {}
+
+            const cleaned = cleanText(text);
+            const strippedClean = stripShoutcastStats(cleaned);
+            if (isValidTitle(strippedClean)) return strippedClean;
+
+            if (strippedClean && strippedClean.length > 2 && !/^\d+(,\d+)*$/.test(strippedClean)) {
+                const lower = strippedClean.toLowerCase();
+                const isServerError = BAD_PATTERNS.some(pattern => lower.includes(pattern));
+                if (!isServerError) return strippedClean;
+            }
+
+            return null;
+        }
+
+        // ================================================================
+        // ===== FONCTION PRINCIPALE : fetchStreamMetadata ===============
+        // ================================================================
+        // Strategie en 3 etapes :
+        //   1. Extraire le titre depuis le flux ICY (via proxy CORS)
+        //      C'est la methode principale maintenant que les endpoints
+        //      HTTP Shoutcast sont desactives.
+        //   2. Si ICY echoue, essayer via AllOrigins JSON API
+        //   3. Si tout echoue, essayer les endpoints HTTP Shoutcast
+        //      (fallback, au cas ou l'admin serait reactive)
+        // ================================================================
+
+        async function fetchStreamMetadata() {
+            if (!isPlaying || isFetchingMetadata) return;
+            isFetchingMetadata = true;
+            metadataFetchCount++;
+            let songTitle = null;
+            let usedMethod = '';
+
+            // ============================================================
+            // ETAPE 1 : Extraction ICY depuis le flux audio via proxy
+            // ============================================================
+            console.log('[Meta] Tentative ICY stream via proxy...');
+            debugLog('Tentative ICY stream...', 'info');
+
+            for (const proxy of CORS_PROXIES) {
+                if (songTitle) break;
+                songTitle = await fetchTitleViaICYStream(proxy, STREAM_URL);
+                if (songTitle) {
+                    usedMethod = 'ICY/' + proxy.split('/')[2];
+                    console.log('[Meta] ICY OK via', proxy.split('/')[2], ':', songTitle);
+                    debugLog('ICY OK: ' + songTitle, 'ok');
+                }
+            }
+
+            // ============================================================
+            // ETAPE 2 : AllOrigins JSON API (si ICY a echoue)
+            // ============================================================
+            if (!songTitle) {
+                console.log('[Meta] ICY echoue, tentative AllOrigins JSON...');
+                debugLog('ICY échoué, tentative AllOrigins...', 'warn');
+                songTitle = await fetchTitleViaAllOriginsJSON(STREAM_URL);
+                if (songTitle) {
+                    usedMethod = 'AllOrigins-JSON';
+                    console.log('[Meta] AllOrigins JSON OK :', songTitle);
+                    debugLog('AllOrigins OK: ' + songTitle, 'ok');
+                }
+            }
+
+            // ============================================================
+            // ETAPE 3 : Fallback - endpoints HTTP Shoutcast (au cas ou)
+            // ============================================================
+            if (!songTitle) {
+                console.log('[Meta] Tentative endpoints HTTP Shoutcast...');
+                debugLog('Tentative HTTP Shoutcast...', 'info');
+                const endpoints = ['/currentsong', '/7.html', '/played.html'];
+                let rawResponse = '';
+
+                for (const endpoint of endpoints) {
+                    if (songTitle) break;
+                    for (const proto of ['http://', 'https://']) {
+                        const url = proto + SC_HOST + ':' + SC_PORT + endpoint;
+                        let text = null;
+
+                        text = await fetchViaProxy(url);
+                        if (!text) text = await fetchDirect(url);
+
+                        if (text) {
+                            rawResponse = text.substring(0, 100);
+                            songTitle = tryExtractTitle(text);
+                            if (songTitle) {
+                                usedMethod = 'HTTP' + endpoint;
+                                console.log('[Meta] HTTP OK via', endpoint, ':', songTitle);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (!songTitle && rawResponse) {
+                    console.log('[Meta] HTTP brut (pas de titre):', rawResponse.substring(0, 40));
+                }
+            }
+
+            // ============================================================
+            // Mise a jour de l'affichage
+            // ============================================================
+            const statusEl = document.getElementById('titleStatus');
+
+            if (songTitle) {
+                consecutiveFailures = 0;
+                const isNew = songTitle !== lastKnownTitle;
+                if (isNew) {
+                    console.log('[Metadata] NOUVEAU titre :', songTitle, '(via ' + usedMethod + ')');
+                    debugLog('NOUVEAU titre: ' + songTitle + ' (' + usedMethod + ')', 'ok');
+                } else {
+                    console.log('[Metadata] Meme titre :', songTitle);
+                }
+                lastKnownTitle = songTitle;
+                updateSongTitle(songTitle);
+                if (statusEl) statusEl.textContent = '';
+                if ('mediaSession' in navigator && navigator.mediaSession.metadata) {
+                    navigator.mediaSession.metadata.title = songTitle;
+                }
+            } else {
+                consecutiveFailures++;
+                console.log('[Metadata] Tentative', metadataFetchCount, '- echec #' + consecutiveFailures);
+                debugLog('Échec #' + consecutiveFailures + ' (tentative ' + metadataFetchCount + ')', 'err');
+
+                if (lastKnownTitle) {
+                    if (statusEl) statusEl.textContent = '';
+                    updateSongTitle(lastKnownTitle);
+                } else {
+                    updateSongTitle(null);
+                    if (metadataFetchCount <= 5 && statusEl) {
+                        statusEl.textContent = 'Recherche du titre...';
+                    } else if (statusEl) {
+                        statusEl.textContent = 'Titre temporairement indisponible';
+                    }
+                }
+            }
+
+            isFetchingMetadata = false;
+        }
+
+        // ===== Controles radio =====
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const count = window.innerWidth < 768 ? 8 : 15;
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                const size = Math.random() * 4 + 2;
+                p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--tx:${(Math.random()-0.5)*60}px;--ty:${(Math.random()-0.5)*60}px;--float-duration:${Math.random()*8+6}s;animation-delay:${Math.random()*5}s;`;
+                container.appendChild(p);
+            }
+        }
+
+        function togglePlay() {
+            if (isConnecting) return;
+            isPlaying ? stopRadio() : playRadio();
+        }
+
+        function playRadio() {
+            isConnecting = true;
+            document.getElementById('nowPlayingSub').textContent = 'Connexion au flux...';
+            updateSongTitle(null);
+            audio.src = STREAM_URL;
+            audio.load();
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    isConnecting = false;
+                    setPlayingState(true);
+                }).catch(err => {
+                    isConnecting = false;
+                    console.warn('Erreur de lecture:', err);
+                    if (err.name === 'NotAllowedError') {
+                        showToast('Touchez a nouveau pour demarrer');
+                    } else {
+                        showToast('Impossible de lire le stream. Verifiez la connexion.');
+                    }
+                    setPlayingState(false);
+                });
+            }
+        }
+
+        function stopRadio() {
+            isConnecting = false;
+            audio.pause();
+            audio.src = '';
+            setPlayingState(false);
+        }
+
+        function setPlayingState(playing) {
+            isPlaying = playing;
+            const icon = document.getElementById('playIcon');
+            icon.setAttribute('data-lucide', playing ? 'pause' : 'play');
+            icon.className = playing ? 'w-8 h-8 text-zinc-900' : 'w-8 h-8 text-zinc-900 ml-1';
+            lucide.createIcons();
+
+            document.getElementById('playRing').classList.toggle('active', playing);
+            document.getElementById('logoContainer').classList.toggle('playing', playing);
+            document.getElementById('logoBorderRing').classList.toggle('active', playing);
+            document.querySelectorAll('.eq-bar').forEach(bar => bar.classList.toggle('active', playing));
+
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            dot.classList.toggle('live', playing);
+            text.textContent = playing ? 'En direct' : 'Hors ligne';
+            text.style.color = playing ? '#22c55e' : '';
+
+            document.getElementById('nowPlaying').textContent = playing ? 'GNews Radio' : 'Pret a ecouter';
+            if (!isConnecting) {
+                document.getElementById('nowPlayingSub').textContent = playing ? 'Le flux audio est actif' : 'Appuyez sur play pour demarrer';
+            }
+
+            if (playing) {
+                updateSongTitle(lastKnownTitle || null);
+                startMetadataPolling();
+            } else {
+                lastKnownTitle = null;
+                currentDisplayedTitle = '';
+                currentCategory = 'music';
+                updateCategoryBadge('music');
+                const titleEl = document.getElementById('songTitle');
+                if (titleEl) {
+                    titleEl.classList.remove('scrolling');
+                    titleEl.style.transform = '';
+                }
+                const container = document.getElementById('songTitleContainer');
+                if (container) container.classList.remove('has-overflow');
+                const statusEl = document.getElementById('titleStatus');
+                if (statusEl) statusEl.textContent = '';
+                updateSongTitle(null);
+                stopMetadataPolling();
+            }
+
+            updateMediaSessionState(playing);
+            try {
+                if (window.Capacitor && window.Capacitor.isNativePlatform() && window.KeepAwake) {
+                    playing ? window.KeepAwake.keepAwake() : window.KeepAwake.allowSleep();
+                }
+            } catch(e) {}
+            if (playing) createRipple();
+        }
+
+        function createRipple() {
+            const container = document.getElementById('playBtnContainer');
+            const ripple = document.createElement('div');
+            ripple.className = 'ripple';
+            ripple.style.left = '50%';
+            ripple.style.top = '50%';
+            ripple.style.transform = 'translate(-50%, -50%)';
+            container.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 1500);
+        }
+
+        function changeVolume(val) {
+            audio.volume = parseInt(val) / 100;
+            document.getElementById('volValue').textContent = val + '%';
+            updateVolIcon(val);
+            if (audio.volume > 0) isMuted = false;
+        }
+
+        function toggleMute() {
+            const slider = document.getElementById('volumeSlider');
+            if (isMuted) {
+                slider.value = previousVolume;
+                audio.volume = previousVolume / 100;
+                isMuted = false;
+            } else {
+                previousVolume = parseInt(slider.value);
+                slider.value = 0;
+                audio.volume = 0;
+                isMuted = true;
+            }
+            document.getElementById('volValue').textContent = slider.value + '%';
+            updateVolIcon(slider.value);
+        }
+
+        function updateVolIcon(val) {
+            const v = parseInt(val);
+            const icon = document.getElementById('volIcon');
+            if (v === 0) icon.setAttribute('data-lucide', 'volume-x');
+            else if (v < 40) icon.setAttribute('data-lucide', 'volume-1');
+            else icon.setAttribute('data-lucide', 'volume-2');
+            lucide.createIcons();
+        }
+
+        audio.addEventListener('waiting', () => {
+            document.getElementById('nowPlayingSub').textContent = 'Chargement du flux...';
+        });
+        audio.addEventListener('playing', () => {
+            document.getElementById('nowPlayingSub').textContent = 'Le flux audio est actif';
+        });
+        audio.addEventListener('error', (e) => {
+            isConnecting = false;
+            showToast(audio.src ? 'Erreur de connexion au stream' : 'Stream arrete');
+            setPlayingState(false);
+        });
+        document.addEventListener('resume', () => {
+            if (isPlaying && audio.paused) audio.play().catch(() => {});
+        });
+
+        // ===== Navigation panneaux =====
+        let currentPage = null;
+
+        function openPage(name) {
+            if (currentPage === name) { closePage(); return; }
+            closePage(() => {
+                currentPage = name;
+                document.getElementById('page-' + name).classList.add('open');
+                document.getElementById('pageOverlay').classList.add('open');
+                lucide.createIcons();
+            });
+        }
+
+        function closePage(callback) {
+            if (currentPage) {
+                document.getElementById('page-' + currentPage).classList.remove('open');
+                document.getElementById('pageOverlay').classList.remove('open');
+                currentPage = null;
+                setTimeout(() => { if (callback) callback(); }, 400);
+            } else {
+                if (callback) callback();
+            }
+        }
+
+        function toggleExpand(card) {
+            card.classList.toggle('expanded');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function sendMessage(e) {
+            e.preventDefault();
+            showToast('Message envoye avec succes !');
+            e.target.reset();
+        }
+
+        function shareRadio() {
+            try {
+                if (window.Capacitor && window.Capacitor.isNativePlatform() && window.Capacitor.Plugins && window.Capacitor.Plugins.Share) {
+                    window.Capacitor.Plugins.Share.share({
+                        title: 'GNews Radio',
+                        text: 'Ecoutez GNews Radio en direct !',
+                        url: 'https://gnews-radio-test.listen2myshow.com/'
+                    });
+                    return;
+                }
+            } catch(e) {}
+            if (navigator.share) {
+                navigator.share({ title: 'GNews Radio', text: 'Ecoutez GNews Radio en direct !', url: window.location.href }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    showToast('Lien copie !');
+                }).catch(() => showToast('Partagez : ' + window.location.href));
+            }
+        }
+    </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
